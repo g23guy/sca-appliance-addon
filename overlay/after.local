@@ -1,0 +1,128 @@
+#!/bin/bash
+firstboot='/root/.first_boot_sca'
+lastboot='/root/.last_boot_sca'
+eif='/etc/issue'
+emf='/etc/motd'
+if [ -s '/studio/profile' ]; then
+	. /studio/profile
+	SCA_PRD="$(echo $kiwi_iname | tr '_' ' ')"
+	SCA_VER="v$kiwi_iversion"
+else
+	SCA_PRD=''
+	SCA_VER=''
+fi
+if [ -e $firstboot ]; then
+	while [[ -e $firstboot ]]
+	do
+		sleep 5
+		if ! ps -eaf | grep "y2base firstboot" | grep -v grep &>/dev/null
+		then
+			rm -f $firstboot
+		fi
+	done
+	echo "Finalizing configuration"
+	sed -i -e "s/$kiwi_iname/$SCA_PRD $SCA_VER/g;s/timeout=10/timeout=2/g" /boot/grub2/grub.cfg
+	echo "Rebooting for new configuration"
+	reboot
+else
+	SCA_NAME="Supportconfig Analysis Appliance"
+	outfile=$eif
+	spacer='          '
+	echo "Configuring $outfile"
+	ipa=$(ip a | grep 'inet ' | grep eth | awk '{print $2}' | cut -d/ -f1)
+	test=1
+	maxtest=3000
+	while [[ -z "$ipa" ]]
+	do
+		sleep 2
+		ipa=$(ip a | grep 'inet ' | grep eth | awk '{print $2}' | cut -d/ -f1)
+		if (( test >= maxtest )); then
+			ipa=REBOOT
+		fi
+		((test++))
+	done
+	echo > $outfile
+	for i in $(seq 1 20); do echo >> $outfile; done
+	echo "$spacer $SCA_NAME" >> $outfile
+	if [ -n "$SCA_PRD" ]; then
+		echo "$spacer $SCA_PRD $SCA_VER" >> $outfile
+	fi
+	echo >> $outfile
+	echo "$spacer Based on openSUSE 12.3" >> $outfile
+	echo >> $outfile
+	echo "$spacer Architecture:   \m" >> $outfile
+	echo "$spacer Kernel:         \r (\l)" >> $outfile
+	for i in $ipa
+	do
+		echo "$spacer IP Address:     $i" >> $outfile
+	done
+	echo "$spacer Hostname:       \n" >> $outfile
+	echo >> $outfile
+	echo "$spacer Run the following command from each server you want analyzed:" >> $outfile
+	echo >> $outfile
+	cnt=0
+	for i in $ipa
+	do
+		echo "$spacer supportconfig -U 'ftp://${i}/upload'" >> $outfile
+		((cnt++))
+	done
+	if [ $cnt -gt 1 ]; then
+		echo >> $outfile
+		echo "$spacer NOTE: Only one command is needed" >> $outfile
+	fi
+	echo >> $outfile
+	echo "$spacer To view the analysis reports, goto the URL:" >> $outfile
+	echo >> $outfile
+	for i in $ipa
+	do
+		echo "$spacer https://${i}/" >> $outfile
+	done
+
+	for i in $(seq 1 9); do echo >> $outfile; done
+
+######################################################################################
+
+	outfile=$emf
+	spacer=''
+	echo "Configuring $outfile"
+	echo > $outfile
+	echo "Welcome to the" >> $outfile
+	echo "$SCA_NAME" >> $outfile
+	if [ -n "$SCA_PRD" ]; then
+		echo "$SCA_PRD $SCA_VER" >> $outfile
+	fi
+	echo >> $outfile
+	echo "$spacer Run the following command from each server you want analyzed:" >> $outfile
+	echo >> $outfile
+	cnt=0
+	for i in $ipa
+	do
+		echo "$spacer supportconfig -U 'ftp://${i}/upload/'" >> $outfile
+		((cnt++))
+	done
+	if [ $cnt -gt 1 ]; then
+		echo >> $outfile
+		echo "$spacer NOTE: Only one command is needed" >> $outfile
+	fi
+	echo >> $outfile
+	echo "$spacer To view the analysis reports, goto the URL:" >> $outfile
+	echo >> $outfile
+	for i in $ipa
+	do
+		echo "$spacer https://${i}/" >> $outfile
+	done
+
+	for i in $(seq 1 9); do echo >> $outfile; done
+
+######################################################################################
+	if [[ -e $lastboot ]]; then
+		echo "Configuring SCA Database"
+		/opt/scdiag/bin/setup-sca -fp linux | tee -a /var/log/messages
+		if (( $? )); then
+			echo "  FAILED"
+		else
+			rm -f $lastboot
+		fi
+	fi
+fi
+

@@ -1,0 +1,15 @@
+[Unit]
+Description=/etc/init.d/after.local Compatibility
+ConditionFileIsExecutable=/etc/init.d/after.local
+
+[Service]
+Type=oneshot
+ExecStart=/etc/init.d/after.local
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
+

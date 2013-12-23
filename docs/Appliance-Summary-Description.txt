@@ -1,0 +1,4 @@
+The Supportconfig Analysis (SCA) Appliance analyzes supportconfig archives for known issues and creates a report linking to the known solutions. The appliance stores analysis results in a MariaDB database and uses PHP to read the database and generate the report. It also has an anonymous FTP server configured to easily upload supportconfig archives for processing. 
+
+The supportconfig tool comes with SUSE Linux Enterprise. Consequently, the SCA Appliance only supports analyzing supportconfigs from SUSE Linux Enterprise Server and Desktop.
+
