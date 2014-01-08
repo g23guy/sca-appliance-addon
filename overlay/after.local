@@ -26,9 +26,11 @@ if [ -e $firstboot ]; then
 	reboot
 else
 	SCA_NAME="Supportconfig Analysis Appliance"
+	echo "Configuring sdagent.conf"
+	sed -i -e "s!ARCH_LOCATION=\$INSRC!ARCH_LOCATION=ftp://$HOSTNAME/upload/!g" /etc/opt/sca/sdagent.conf
 	outfile=$eif
-	spacer='          '
 	echo "Configuring $outfile"
+	spacer='          '
 	ipa=$(ip a | grep 'inet ' | grep eth | awk '{print $2}' | cut -d/ -f1)
 	test=1
 	maxtest=3000
