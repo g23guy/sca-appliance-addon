@@ -1,5 +1,5 @@
 OBSPACKAGE=sca-appliance-overlay
-VERSION='1.0'
+VERSION='1.0.1'
 DATE=$(shell date '+%y%m%d-%H%M')
 SRCDIR=$(OBSPACKAGE)-$(VERSION)
 OVERLAY_FILE=$(OBSPACKAGE)-$(VERSION)_$(DATE).tar.gz
@@ -32,7 +32,6 @@ install: uninstall
 	@install -m 544 -o root -g root overlay/after.local $(SRCDIR)/etc/init.d/
 	@install -m 644 -o root -g root overlay/sca.conf $(SRCDIR)/etc/apache2/vhosts.d/
 	@install -m 644 -o root -g root \
-		overlay/.bashrc \
 		overlay/.first_boot_sca \
 		overlay/.last_boot_sca \
 		$(SRCDIR)/root/
