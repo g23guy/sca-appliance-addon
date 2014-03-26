@@ -1,5 +1,5 @@
 OBSPACKAGE=sca-appliance-overlay
-VERSION='1.0.1'
+VERSION='1.0.2'
 DATE=$(shell date '+%y%m%d-%H%M')
 SRCDIR=$(OBSPACKAGE)-$(VERSION)
 OVERLAY_FILE=$(OBSPACKAGE)-$(VERSION)_$(DATE).tar.gz
@@ -8,7 +8,6 @@ default: overlay
 
 overlay: install
 	@echo overlay: Creating overlay tar ball
-	@cp COPYING.GPLv2 $(SRCDIR)
 	@cd $(SRCDIR); tar zcf ../$(OVERLAY_FILE) *
 	@echo; ls -l $$LS_OPTIONS; echo
 

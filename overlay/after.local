@@ -3,6 +3,9 @@ firstboot='/root/.first_boot_sca'
 lastboot='/root/.last_boot_sca'
 eif='/etc/issue'
 emf='/etc/motd'
+DPASS='linux'
+USE_HOSTNAME='localhost'
+
 if [ -s '/studio/profile' ]; then
 	. /studio/profile
 	SCA_PRD="$(echo $kiwi_iname | tr '_' ' ')"
@@ -119,7 +122,7 @@ else
 ######################################################################################
 	if [[ -e $lastboot ]]; then
 		echo "Configuring SCA Database"
-		/opt/scdiag/bin/setup-sca -fp linux | tee -a /var/log/messages
+		/usr/sbin/setup-sca -bcfp $DPASS -s $USE_HOSTNAME | tee -a /var/log/messages
 		if (( $? )); then
 			echo "  FAILED"
 		else
