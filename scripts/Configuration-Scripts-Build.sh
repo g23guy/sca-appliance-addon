@@ -9,6 +9,7 @@
 # (oem = disk image, vmx = VMware, iso = CD/DVD, xen = Xen).
 #
 DPASS='linux'
+USE_HOSTNAME='localhost'
 
 # read in some variables
 . /studio/profile
@@ -47,7 +48,9 @@ echo "* MySQL Password Set "
 sleep 1
 
 #======================================
-# SCA User Description
+# Configure Supportconfig Diagnostic Tool
 #--------------------------------------
+/usr/sbin/setup-sca -bcfp $DPASS -s $USE_HOSTNAME
 sed -i -e 's!0:0:root:/!0:0:SCA Notification:/!g' /etc/passwd
+
 
