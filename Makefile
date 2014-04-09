@@ -1,5 +1,5 @@
 OBSPACKAGE=sca-appliance-overlay
-VERSION='1.0.2'
+VERSION='1.0.3'
 DATE=$(shell date '+%y%m%d-%H%M')
 SRCDIR=$(OBSPACKAGE)-$(VERSION)
 OVERLAY_FILE=$(OBSPACKAGE)-$(VERSION)_$(DATE).tar.gz

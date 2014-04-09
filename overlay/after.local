@@ -122,7 +122,7 @@ else
 ######################################################################################
 	if [[ -e $lastboot ]]; then
 		echo "Configuring SCA Database"
-		/usr/sbin/setup-sca -bcfp $DPASS -s $USE_HOSTNAME | tee -a /var/log/messages
+		/usr/sbin/setup-sca -cfp $DPASS | tee -a /var/log/messages
 		if (( $? )); then
 			echo "  FAILED"
 		else
