@@ -47,10 +47,3 @@ sleep 2
 echo "* MySQL Password Set "
 sleep 1
 
-#======================================
-# Configure Supportconfig Diagnostic Tool
-#--------------------------------------
-/usr/sbin/setup-sca -bcfp $DPASS -s $USE_HOSTNAME
-sed -i -e 's!0:0:root:/!0:0:SCA Notification:/!g' /etc/passwd
-
-

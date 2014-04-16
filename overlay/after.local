@@ -122,11 +122,36 @@ else
 ######################################################################################
 	if [[ -e $lastboot ]]; then
 		echo "Configuring SCA Database"
-		/usr/sbin/setup-sca -cfp $DPASS | tee -a /var/log/messages
-		if (( $? )); then
-			echo "  FAILED"
+		WAIT_TIME=30
+		WAITING=0
+		INSTALL=0
+		#wait for apache and mysql to load
+		while (( WAITING < WAIT_TIME ))
+		do
+			systemctl show --system --no-pager -p SubState apache2.service 2>/dev/null | grep -i running &>/dev/null
+			SUB_WEB=$?
+			/etc/init.d/mysql status 2>/dev/null | grep -i "running" &>/dev/null
+			SUB_SQL=$?
+			SUB_TOTAL=$((SUB_WEB + SUB_SQL))
+			if (( SUB_TOTAL ))
+			then
+				sleep 1
+				((WAITING++))
+			else
+				WAITING=$WAIT_TIME
+				INSTALL=1
+			fi
+		done
+		if (( INSTALL ))
+		then
+			/usr/sbin/setup-sca -cfp $DPASS -s $USE_HOSTNAME | tee -a /var/log/messages
+			if (( $? )); then
+				echo "  FAILED"
+			else
+				rm -f $lastboot
+			fi
 		else
-			rm -f $lastboot
+			echo " FAILED - Waiting on Apache and MySQL to load"
 		fi
 	fi
 fi
