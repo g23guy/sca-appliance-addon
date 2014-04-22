@@ -144,7 +144,7 @@ else
 		done
 		if (( INSTALL ))
 		then
-			/usr/sbin/setup-sca -cfp $DPASS -s $USE_HOSTNAME | tee -a /var/log/messages
+			/usr/sbin/setup-sca -fp $DPASS -s $USE_HOSTNAME -w $DPASS | tee -a /var/log/messages
 			if (( $? )); then
 				echo "  FAILED"
 			else
